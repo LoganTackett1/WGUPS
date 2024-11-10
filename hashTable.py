@@ -12,10 +12,9 @@ class HashTable:
 
 
     def resize(self):
-        if self.count == self.size:
-            extension = [None] * self.size
-            self.table.extend(extension)
-            self.size *= 2
+        extension = [None] * self.size
+        self.table.extend(extension)
+        self.size *= 2
 
 
     #assumes status to be default at hub
@@ -25,7 +24,7 @@ class HashTable:
         #If key outside range of table
         if key > self.size - 1:
             self.resize()
-            return self.insertPackage(self,package)
+            return self.insertPackage(package)
     
         #If key already in table, dont increment count and update info
         #If key not in table, increment count
