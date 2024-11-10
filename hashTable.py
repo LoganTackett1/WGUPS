@@ -7,7 +7,7 @@ class HashTable:
         self.size = initial_size
         self.count = 0
     
-    def hashkey(id):
+    def hashkey(self,id):
         return int(id) - 1
 
 
@@ -43,3 +43,11 @@ class HashTable:
             return self.insertPackage(package)
         else:
             return False     
+        
+    #Lookup function
+    def lookup(self,id):
+        key = self.hashkey(id)
+        if key < 0 or key > self.size - 1:
+            return False
+        else:
+            return self.table[key]
