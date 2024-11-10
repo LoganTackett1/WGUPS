@@ -37,3 +37,48 @@ def populateUpperTriange(matrix):
         for j in range(1,len(matrix)):
             matrix[i][j] = matrix[j][i]
 
+#merge sort will use key_f to map package id's to their deadline
+def merge(items,i,j,k,key_f):
+    merged_size = k - i + 1
+    merged_items = []
+    for l in range(merged_size):
+        merged_items.append(0)
+    
+    merge_pos = 0
+    left_pos = i
+    right_pos = j + 1
+
+    while left_pos <= j and right_pos <= k:
+        if key_f(items[left_pos]) < key_f(items[right_pos]):
+            merged_items[merge_pos] = items[left_pos]
+            left_pos += left_pos
+        else:
+            merged_items[merge_pos] = items[right_pos]
+            right_pos += right_pos
+        merge_pos += 1
+
+    while left_pos <= j:
+        merged_items[merge_pos] = items[left_pos]
+        left_pos += 1
+        merge_pos += 1
+
+    while right_pos <= k:
+        merged_items[merge_pos] = items[right_pos]
+        right_pos += 1
+        merge_pos += 1
+
+    merge_pos = 0
+    while merge_pos < merged_size:
+        items[i + merge_pos] = merged_items[merge_pos]
+        merge_pos += 1
+
+#merge sort, O(nlogn) will be used to sort packages in trucks by deadline.
+def merge_sort(items,i,k,key_f):
+    j = 0
+    if i < k:
+        j = (i + k) // 2
+
+        merge_sort(items,i,j,key_f)
+        merge_sort(items,j + 1,k,key_f)
+
+        merge(items,i,j,k,key_f)
