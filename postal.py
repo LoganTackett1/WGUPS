@@ -25,16 +25,28 @@ def packageFromCsv(id,csv):
 class Truck:
     def __init__(self):
         self.packages = []
+        self.package_count = 0
         self.departure_time = None
         self.return_time = None
         self.miles = None
 
+    #packages are stored by id, and their information will be pulled from the hash table
     def loadPackage(self,package):
         if package.id in self.packages:
             return False
         else:
+            if self.package_count == 16:
+                return False
             self.packages.append(package)
+            self.package_count += 1
+            return True
 
     def loadPackages(self,packages):
         for package in packages:
             self.loadPackage(package)
+
+    #first sorts packages by deadline to ensure that packages with earlier deadlines get delivered first, O(nlogn).
+    #then sorts each group of packages with the same deadline using nearest neighbor, 
+    # such that the start of each group is the closest location to the end of the previous group.
+    def sortPackages(self,hashTable,adjMatrix):
+        return
