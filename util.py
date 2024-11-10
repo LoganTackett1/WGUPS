@@ -12,12 +12,11 @@ def FloydWarshallAllPairsShortestPath(matrix):
 
 # key_f is a function that maps start and items from list to their vertex number.
 # ex: start and list are package ids, key_f can map package id's to their destinations vertex number.
+# start is assumed to be the index of the location in the adjacency matrix and not an item id.
 def nearestNeighbor(start,list,key_f,matrix):
     sorted = []
-    curr = start
+    curr_label = start
     while len(list) != 0:
-        curr_label = key_f(curr)
-
         min_item = None
         min_dist = float('inf')
         for item in list:
@@ -26,7 +25,7 @@ def nearestNeighbor(start,list,key_f,matrix):
                 min_item = item
                 min_dist = matrix[curr_label][item_label]
         sorted.append(min_item)
-        curr = min_item
+        curr_label = key_f(min_item)
         list.remove(min_item)
     return sorted
 
@@ -36,6 +35,7 @@ def populateUpperTriange(matrix):
     for i in range(len(matrix)-1):
         for j in range(1,len(matrix)):
             matrix[i][j] = matrix[j][i]
+    return matrix
 
 #merge sort will use key_f to map package id's to their deadline
 def merge(items,i,j,k,key_f):
@@ -51,10 +51,10 @@ def merge(items,i,j,k,key_f):
     while left_pos <= j and right_pos <= k:
         if key_f(items[left_pos]) < key_f(items[right_pos]):
             merged_items[merge_pos] = items[left_pos]
-            left_pos += left_pos
+            left_pos += 1
         else:
             merged_items[merge_pos] = items[right_pos]
-            right_pos += right_pos
+            right_pos += 1
         merge_pos += 1
 
     while left_pos <= j:

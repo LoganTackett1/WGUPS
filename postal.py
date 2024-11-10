@@ -38,7 +38,7 @@ class Truck:
         else:
             if self.package_count == 16:
                 return False
-            self.packages.append(package)
+            self.packages.append(package.id)
             self.package_count += 1
             return True
 
@@ -55,7 +55,7 @@ class Truck:
         #key_f function
         def id_to_deadline(id):
             package = hashTable.lookup(id)
-            return package.id
+            return package.deadline
         
         #key_f function
         def id_to_adj_label(id):
@@ -73,7 +73,7 @@ class Truck:
         start = 0
         while l < self.package_count - 1:
             #adjusting r pointer such that l and r pointer group items with same deadline
-            if id_to_deadline(self.packages[l]) == id_to_deadline(self.packages[r]):
+            if r < self.package_count and id_to_deadline(self.packages[l]) == id_to_deadline(self.packages[r]):
                 r += 1
             else:
                 #slice that portion of the packages array
