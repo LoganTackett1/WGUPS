@@ -1,9 +1,13 @@
+from util import populateUpperTriange
 from hashTable import HashTable
-from package import Package
+from postal import Package, Truck
 import datetime
 
-myTable = HashTable(10)
-myPackage = Package(11,"111 Goose St",datetime.time(10,30),"Las Vegas",89031,31,"Late Arrival")
-myTable.insertPackage(myPackage)
-package = myTable.lookup(11)
-print(myTable.count)
+my_destination_array = ["A","B","C","D","E"]
+my_adjacency_matrix = [[0,0,0,0,0],
+                       [5,0,0,0,0],
+                       [1,2,0,0,0],
+                       [12,11,6,0,0],
+                       [1,3,4,5,0]]
+
+my_populated_matrix = populateUpperTriange(my_adjacency_matrix)

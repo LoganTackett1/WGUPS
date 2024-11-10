@@ -1,5 +1,5 @@
-from package import Package
-from package import packageFromCsv
+from postal import Package
+from postal import packageFromCsv
 
 class HashTable:
     def __init__(self,initial_size):
