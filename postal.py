@@ -3,7 +3,7 @@ import csv
 import datetime
 
 class Package:
-    def __init__(self,id,address,deadline,city,zip,weight,note,status="At Hub"):
+    def __init__(self,id,address,deadline,city,zip,weight,note=None,status="At Hub"):
         self.id = int(id)
         self.address = address
         self.deadline = deadline
@@ -24,7 +24,8 @@ def packageFromCsv(id,csv):
         return False
     
 class Truck:
-    def __init__(self):
+    def __init__(self,id):
+        self.id = id
         self.packages = []
         self.package_count = 0
         self.departure_time = None
@@ -39,6 +40,16 @@ class Truck:
             if self.package_count == 16:
                 return False
             self.packages.append(package.id)
+            self.package_count += 1
+            return True
+        
+    def loadPackageById(self,id):
+        if id in self.packages:
+            return False
+        else:
+            if self.package_count == 16:
+                return False
+            self.packages.append(id)
             self.package_count += 1
             return True
 
@@ -86,3 +97,75 @@ class Truck:
                 #adjust pointers
                 l = r
                 start = id_to_adj_label(self.packages[r-1])
+
+#functions taking packages as input are assumed to be package id's requiring lookup.
+def loadTrucks(trucks,packages,hashtable):
+    #key_f function to be used
+    def id_to_deadline(id):
+            package = hashtable.lookup(id)
+            return package.deadline
+    
+    packages_no_notes = []
+    packages_notes = []
+    #group package ids by whether they have notes or not
+    for id in packages:
+        package = hashtable.lookup(id)
+        if package.note == None:
+            packages_no_notes.append(id)
+        else:
+            packages_notes.append(id)
+
+    #sort them by time that way packages with earlier deadlines are loaded first
+    merge_sort(packages_no_notes,0,len(packages_no_notes)-1,id_to_deadline)
+    merge_sort(packages_notes,0,len(packages_notes)-1,id_to_deadline)
+    #to prepare them to load by array.pop()
+    packages_no_notes.reverse()
+    packages_notes.reverse()
+
+    #to store packages that have a note of wrong address
+    packages_wrong_address = []
+
+    #truck 1 will have all packages with no notes up to 16 packages
+    truck1 = trucks[0]
+    while truck1.package_count < 16 and len(packages_no_notes) > 0:
+        id = packages_no_notes.pop()
+        truck1.loadPackageById(id)
+
+    #truck 2 will have all packages with notes and more up to 16
+    #truck 2 will be waiting for late arrivals to arrive before leaving.
+    truck2 = trucks[1]
+    while truck2.package_count < 16 and len(packages_notes) > 0:
+        id = packages_notes.pop()
+        package = hashtable.lookup(id)
+        if package.note == "Wrong Address Listed":
+            packages_wrong_address.append(id)
+        else:
+            truck2.loadPackageById(id)
+
+    #load any remaining packages onto the trucks now
+
+    truck3 = trucks[2]
+    while truck1.package_count < 16 and len(packages_no_notes) > 0:
+        id = packages_no_notes.pop()
+        truck1.loadPackageById(id)
+    while truck1.package_count < 16 and len(packages_notes) > 0:
+        id = packages_notes.pop()
+        truck1.loadPackageById(id)
+    while truck2.package_count < 16 and len(packages_no_notes) > 0:
+        id = packages_no_notes.pop()
+        truck2.loadPackageById(id)
+    while truck2.package_count < 16 and len(packages_notes) > 0:
+        id = packages_notes.pop()
+        truck2.loadPackageById(id)
+    while truck3.package_count < 16 and len(packages_no_notes) > 0:
+        id = packages_no_notes.pop()
+        truck3.loadPackageById(id)
+    while truck3.package_count < 16 and len(packages_notes) > 0:
+        id = packages_notes.pop()
+        truck3.loadPackageById(id)
+    
+    #we will return these to be loaded onto a truck after sorting, that way it is at the end of the
+    #list of packages (to be delivered last) until its address is received, then the delivery order
+    #can be resorted for optimal delivery
+    return packages_wrong_address
+
