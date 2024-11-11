@@ -40,7 +40,7 @@ truck1.deliverPackages()
 truck2.deliverPackages()
 truck3.deliverPackages()
 
-printAllTrucksStatus(Fleet,datetime.datetime(2024,11,10,23,59))
+printAllTrucksStatus(Fleet,datetime.datetime(2024,11,10,9,59))
 """
 for id in truck1.delivered:
     package = my_hash_table.lookup(id)

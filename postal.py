@@ -314,7 +314,7 @@ def loadWrongAddressPackages(trucks,extras):
 
 
 def printAllTrucksStatus(trucks,time):
-    print("*** All Deliveries Status ***")
+    print("*** Delivery Status At Time: " + str(time.hour) + ":" + str(time.minute) + " ***")
     print()
     total_milage = 0
     for truck in trucks:
