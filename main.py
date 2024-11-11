@@ -1,6 +1,6 @@
 from util import populateUpperTriange, FloydWarshallAllPairsShortestPath, merge_sort
 from hashTable import HashTable
-from postal import Package, Truck, loadTrucks, printAllTrucksStatus
+from postal import Package, Truck, loadTrucks, printAllTrucksStatus, loadWrongAddressPackages
 import datetime
 
 my_destination_array = ["A","B","C","D","E"]
@@ -32,17 +32,14 @@ truck3 = Truck(2,datetime.datetime(2024,11,10,8,30),my_destination_array,my_adja
 
 Fleet = [truck1,truck2,truck3]
 
-loadTrucks(Fleet,[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22],my_hash_table)
+wrong_addresses = loadTrucks(Fleet,[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22],my_hash_table)
 for truck in Fleet:
     truck.sortPackages()
+
+loadWrongAddressPackages(Fleet,wrong_addresses)
 
 truck1.deliverPackages()
 truck2.deliverPackages()
 truck3.deliverPackages()
 
-printAllTrucksStatus(Fleet,datetime.datetime(2024,11,10,9,59))
-"""
-for id in truck1.delivered:
-    package = my_hash_table.lookup(id)
-    print(package.id,package.address,package.deadline,package.departure_time,package.arrival_time)
-"""
+printAllTrucksStatus(Fleet,datetime.datetime(2024,11,10,11,44))
