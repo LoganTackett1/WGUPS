@@ -122,17 +122,6 @@ class Truck:
 
 
     def deliverPackages(self):
-        #key_f function
-        def id_to_deadline(id):
-            package = self.hashTable.lookup(id)
-            return package.deadline
-        
-        #key_f function
-        def id_to_adj_label(id):
-            package = self.hashTable.lookup(id)
-            label = self.destination_array.index(package.address)
-            return label
-        
         #preparing to deliver in order using array pop
         self.packages.reverse()
 
@@ -212,7 +201,7 @@ class Truck:
         print()
         
         #print package information
-        print("   All Packages:")
+        print("   Truck " + str(self.id) +  " Packages:")
         all_packages = self.packages + self.packages_no_address + self.delivered
         for id in all_packages:
             package = self.hashTable.lookup(id)
@@ -322,5 +311,17 @@ def loadWrongAddressPackages(trucks,extras):
         id = extras.pop()
         truck3.loadPackageById(id)
         truck3.address_update_time = datetime.datetime(2024,11,10,10,20)
-    
+
+
+def printAllTrucksStatus(trucks,time):
+    print("*** All Deliveries Status ***")
+    print()
+    total_milage = 0
+    for truck in trucks:
+        total_milage += truck.calculateMilage(time)
+    print("All Trucks Current Milage: " + str(total_milage))
+    print()
+    for truck in trucks:
+        truck.printDeliveryStatus(time)
+        print()
     
