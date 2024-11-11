@@ -1,12 +1,14 @@
 from postal import Package
 from postal import packageFromCsv
 
+
 class HashTable:
     def __init__(self,initial_size):
         self.table = [None] * initial_size
         self.size = initial_size
         self.count = 0
     
+
     def hashkey(self,id):
         return int(id) - 1
 
@@ -47,6 +49,7 @@ class HashTable:
             return self.insertPackage(package)
         else:
             return False     
+        
         
     #Lookup function
     def lookup(self,id):
