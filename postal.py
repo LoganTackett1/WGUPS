@@ -3,14 +3,15 @@ import csv
 import datetime
 
 class Package:
-    def __init__(self,id,address,deadline,city,zip,weight,note=None,status="At Hub"):
+    def __init__(self,id,address,deadline,city,zip,weight,note=None):
         self.id = int(id)
         self.address = address
         self.deadline = deadline
+        self.arrival_time = None
+        self.departure_time = None
         self.city = city
         self.zip = int(zip)
         self.weight = float(weight)
-        self.status = status
         self.note = note
 
 def packageFromCsv(id,csv):
@@ -24,13 +25,16 @@ def packageFromCsv(id,csv):
         return False
     
 class Truck:
-    def __init__(self,id):
+    def __init__(self,id,departure_time):
         self.id = id
         self.packages = []
+        self.delivered = []
         self.package_count = 0
-        self.departure_time = None
+        self.departure_time = departure_time
+        self.current_time = departure_time
         self.return_time = None
-        self.miles = None
+        self.miles = 0
+        self.address_update_time = datetime.datetime(2024,11,10,23,59)
 
     #packages are stored by id, and their information will be pulled from the hash table
     def loadPackage(self,package):
@@ -39,16 +43,19 @@ class Truck:
         else:
             if self.package_count == 16:
                 return False
+            package.departure_time = self.departure_time
             self.packages.append(package.id)
             self.package_count += 1
             return True
         
-    def loadPackageById(self,id):
+    def loadPackageById(self,id,hashtable):
         if id in self.packages:
             return False
         else:
             if self.package_count == 16:
                 return False
+            package = hashtable.lookup(id)
+            package.departure_time = self.departure_time
             self.packages.append(id)
             self.package_count += 1
             return True
@@ -98,6 +105,75 @@ class Truck:
                 l = r
                 start = id_to_adj_label(self.packages[r-1])
 
+    def deliverPackages(self,hashTable,destination_array,adjacency_matrix):
+        #key_f function
+        def id_to_deadline(id):
+            package = hashTable.lookup(id)
+            return package.deadline
+        
+        #key_f function
+        def id_to_adj_label(id):
+            package = hashTable.lookup(id)
+            label = destination_array.index(package.address)
+            return label
+        
+        #preparing to deliver in order using array pop
+        self.packages.reverse()
+
+        curr_location = "A"
+        curr_time = self.departure_time
+        correct_info_received = False
+        while self.package_count > 0:
+            #we have received the correct address information for packages that were loaded last
+            if curr_time > self.address_update_time and correct_info_received == False:
+                #sort them to reoptimize delivery order with new information
+                self.sortPackages(hashTable,adjacency_matrix,destination_array)
+                #reverse as the sort undoes the correct ordering for array.pop() usage
+                self.packages.reverse()
+                #set correct_info_received to True so this optimization only happens once.
+                correct_info_received = True
+
+            #get package information
+            delivering_id = self.packages.pop()
+            delivering_package = hashTable.lookup(delivering_id)
+            to_location = delivering_package.address
+
+            #get address labels in adjacency matrix and get distance
+            curr_location_label = destination_array.index(curr_location)
+            to_location_label = destination_array.index(to_location)
+            distance = adjacency_matrix[curr_location_label][to_location_label]
+
+            #update truck milage
+            self.miles += distance
+
+            #18 mph average
+            time_to = datetime.timedelta(hours=(distance/18))
+
+            #calculate delivered time
+            delivery_time = curr_time + time_to
+
+            #update package information
+            delivering_package.arrival_time = delivery_time
+
+            #update curr pointers for next loop
+            curr_time = delivery_time
+            curr_location = to_location
+
+            #all package delivery steps done for this package, decrement self.package_count
+            #add package id to delivered
+            self.package_count -= 1
+            self.delivered.append(delivering_id)
+
+        #while loop over means that all packages are delivered, time to return to HUB
+        curr_location_label = destination_array.index(curr_location)
+        dist_to_hub = adjacency_matrix[0][curr_location_label]
+        self.miles += dist_to_hub
+        time_to_hub = datetime.timedelta(hours=(dist_to_hub/18))
+        self.return_time = curr_time + time_to_hub
+
+        
+            
+
 #functions taking packages as input are assumed to be package id's requiring lookup.
 def loadTrucks(trucks,packages,hashtable):
     #key_f function to be used
@@ -129,7 +205,7 @@ def loadTrucks(trucks,packages,hashtable):
     truck1 = trucks[0]
     while truck1.package_count < 16 and len(packages_no_notes) > 0:
         id = packages_no_notes.pop()
-        truck1.loadPackageById(id)
+        truck1.loadPackageById(id,hashtable)
 
     #truck 2 will have all packages with notes and more up to 16
     #truck 2 will be waiting for late arrivals to arrive before leaving.
@@ -140,32 +216,50 @@ def loadTrucks(trucks,packages,hashtable):
         if package.note == "Wrong Address Listed":
             packages_wrong_address.append(id)
         else:
-            truck2.loadPackageById(id)
+            truck2.loadPackageById(id,hashtable)
 
     #load any remaining packages onto the trucks now
 
     truck3 = trucks[2]
     while truck1.package_count < 16 and len(packages_no_notes) > 0:
         id = packages_no_notes.pop()
-        truck1.loadPackageById(id)
+        truck1.loadPackageById(id,hashtable)
     while truck1.package_count < 16 and len(packages_notes) > 0:
         id = packages_notes.pop()
-        truck1.loadPackageById(id)
+        truck1.loadPackageById(id,hashtable)
     while truck2.package_count < 16 and len(packages_no_notes) > 0:
         id = packages_no_notes.pop()
-        truck2.loadPackageById(id)
+        truck2.loadPackageById(id,hashtable)
     while truck2.package_count < 16 and len(packages_notes) > 0:
         id = packages_notes.pop()
-        truck2.loadPackageById(id)
+        truck2.loadPackageById(id,hashtable)
     while truck3.package_count < 16 and len(packages_no_notes) > 0:
         id = packages_no_notes.pop()
-        truck3.loadPackageById(id)
+        truck3.loadPackageById(id,hashtable)
     while truck3.package_count < 16 and len(packages_notes) > 0:
         id = packages_notes.pop()
-        truck3.loadPackageById(id)
+        truck3.loadPackageById(id,hashtable)
     
     #we will return these to be loaded onto a truck after sorting, that way it is at the end of the
-    #list of packages (to be delivered last) until its address is received, then the delivery order
-    #can be resorted for optimal delivery
+    #list of packages (to be delivered last). They will be resorted once the new address information
+    #is gotten
     return packages_wrong_address
 
+#used to load packages who's addresses need correction to the back of the list.
+def loadWrongAddressPackages(trucks,extras,hashtable):
+    truck1 = trucks[0]
+    truck2 = trucks[1]
+    truck3 = trucks[2]
+    while truck1.package_count < 16 and len(extras) > 0:
+        id = extras.pop()
+        truck1.loadPackageById(id,hashtable)
+        truck1.address_update_time = datetime.datetime(2024,11,10,10,20)
+    while truck2.package_count < 16 and len(extras) > 0:
+        id = extras.pop()
+        truck2.loadPackageById(id,hashtable)
+        truck2.address_update_time = datetime.datetime(2024,11,10,10,20)
+    while truck3.package_count < 16 and len(extras) > 0:
+        id = extras.pop()
+        truck3.loadPackageById(id,hashtable)
+        truck3.address_update_time = datetime.datetime(2024,11,10,10,20)
+    

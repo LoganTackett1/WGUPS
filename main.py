@@ -18,13 +18,13 @@ FloydWarshallAllPairsShortestPath(my_adjacency_matrix)
  [6, 8, 6, 0, 5], 
  [1, 3, 2, 5, 0]]
 def ezPackage(id,address,deadline,note=None):
-    return Package(id,address,deadline,"1","1","1",note,"Hub")
+    return Package(id,address,deadline,"1","1","1",note)
 
-truck1 = Truck(0)
-truck2 = Truck(1)
-truck3 = Truck(2)
+truck1 = Truck(0,datetime.datetime(2024,11,10,8,30))
+truck2 = Truck(1,datetime.datetime(2024,11,10,8,30))
+truck3 = Truck(2,datetime.datetime(2024,11,10,8,30))
 
-my_packages = [ezPackage(1,"B",datetime.time(10,30),"Wrong Address Listed"),ezPackage(2,"A",datetime.time(10,30)),ezPackage(3,"C",datetime.time(11,30),"note"),ezPackage(4,"D",datetime.time(10,30)),ezPackage(5,"E",datetime.time(12,30)),ezPackage(6,"A",datetime.time(10,30),"note"),ezPackage(7,"B",datetime.time(11,30)),ezPackage(8,"C",datetime.time(12,30)),ezPackage(9,"D",datetime.time(12,30)),ezPackage(10,"E",datetime.time(12,30)),ezPackage(11,"A",datetime.time(11,30),"note"),ezPackage(12,"B",datetime.time(10,30),"note"),ezPackage(13,"A",datetime.time(10,30)),ezPackage(14,"C",datetime.time(11,30),"note"),ezPackage(15,"D",datetime.time(10,30)),ezPackage(16,"E",datetime.time(12,30)),ezPackage(17,"A",datetime.time(10,30),"note"),ezPackage(18,"B",datetime.time(11,30)),ezPackage(19,"C",datetime.time(12,30)),ezPackage(20,"D",datetime.time(12,30)),ezPackage(21,"E",datetime.time(12,30)),ezPackage(22,"A",datetime.time(11,30),"note")]
+my_packages = [ezPackage(1,"B",datetime.datetime(2024,11,10,10,30),"Wrong Address Listed"),ezPackage(2,"A",datetime.datetime(2024,11,10,10,30)),ezPackage(3,"C",datetime.datetime(2024,11,10,11,30),"note"),ezPackage(4,"D",datetime.datetime(2024,11,10,10,30)),ezPackage(5,"E",datetime.datetime(2024,11,10,12,30)),ezPackage(6,"A",datetime.datetime(2024,11,10,10,30),"note"),ezPackage(7,"B",datetime.datetime(2024,11,10,11,30)),ezPackage(8,"C",datetime.datetime(2024,11,10,12,30)),ezPackage(9,"D",datetime.datetime(2024,11,10,12,30)),ezPackage(10,"E",datetime.datetime(2024,11,10,12,30)),ezPackage(11,"A",datetime.datetime(2024,11,10,11,30),"note"),ezPackage(12,"B",datetime.datetime(2024,11,10,10,30),"note"),ezPackage(13,"A",datetime.datetime(2024,11,10,10,30)),ezPackage(14,"C",datetime.datetime(2024,11,10,11,30),"note"),ezPackage(15,"D",datetime.datetime(2024,11,10,11,30)),ezPackage(16,"E",datetime.datetime(2024,11,10,12,30)),ezPackage(17,"A",datetime.datetime(2024,11,10,10,30),"note"),ezPackage(18,"B",datetime.datetime(2024,11,10,11,30)),ezPackage(19,"C",datetime.datetime(2024,11,10,12,30)),ezPackage(20,"D",datetime.datetime(2024,11,10,12,30)),ezPackage(21,"E",datetime.datetime(2024,11,10,12,30)),ezPackage(22,"A",datetime.datetime(2024,11,10,11,30),"note")]
 
 my_hash_table = HashTable(10)
 for package in my_packages:
@@ -35,8 +35,9 @@ Fleet = [truck1,truck2,truck3]
 loadTrucks(Fleet,[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22],my_hash_table)
 for truck in Fleet:
     truck.sortPackages(my_hash_table,my_adjacency_matrix,my_destination_array)
-for truck in Fleet:
-    print("truck start")
-    for id in truck.packages:
-        package = my_hash_table.lookup(id)
-        print(package.id,package.address,package.deadline)
+
+truck1.deliverPackages(my_hash_table,my_destination_array,my_adjacency_matrix)
+
+for id in truck1.delivered:
+    package = my_hash_table.lookup(id)
+    print(package.id,package.address,package.deadline,package.arrival_time)
