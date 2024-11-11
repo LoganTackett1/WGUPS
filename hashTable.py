@@ -1,5 +1,4 @@
 from postal import Package
-from postal import packageFromCsv
 
 
 class HashTable:
@@ -40,15 +39,6 @@ class HashTable:
     #insert package by information instead of object.
     def insertPackageInfo(self,id,address,deadline,city,zip,weight,note=None):
         return self.insertPackage(Package(id,address,deadline,city,zip,weight,note))
-
-
-    #Inserts package from csv file using only id for lookup
-    def insertPackageCsv(self,id,csv):
-        package = packageFromCsv(id,csv)
-        if package != False:
-            return self.insertPackage(package)
-        else:
-            return False     
         
         
     #Lookup function

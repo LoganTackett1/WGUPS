@@ -1,6 +1,6 @@
 from util import merge_sort, nearestNeighbor
-import csv
 import datetime
+import csv
 
 
 class Package:
@@ -17,17 +17,6 @@ class Package:
         #extra package props
         self.arrival_time = None
         self.departure_time = None
-
-
-def packageFromCsv(id,csv):
-    with open(csv,newline='') as csvfile:
-        package_table = csv.reader(csvfile)
-        for row in package_table:
-            arr = row.split(",")
-            if arr[0] == str(id):
-                timearr = arr[2].split(':')
-                return Package(arr[0],arr[1],datetime.time(timearr[0],timearr[1]),arr[3],arr[4],arr[5],arr[6])
-        return False
     
 
 class Truck:
@@ -148,7 +137,7 @@ class Truck:
 
 
     #defaults initial location and time to HUB and self.departure_time
-    def deliverPackages(self,init_location="A",init_time=None):
+    def deliverPackages(self,init_location="HUB",init_time=None):
         #sort packages for optimal delivery order
         self.sortPackages(self.address_to_label(init_location))
         #preparing to deliver in order using array pop
@@ -278,9 +267,9 @@ class Truck:
                     status = "En Route"
             else:
                 if package.arrival_time > package.deadline:
-                    status = "Delivered at time: " + str(package.arrival_time.hour) + ":" + str(package.arrival_time.minute) + "(Late)"
+                    status = "Delivered at time: " + str(package.arrival_time.hour) + ":" + str(package.arrival_time.minute) + " (Late)"
                 else:
-                    status = "Delivered at time: " + str(package.arrival_time.hour) + ":" + str(package.arrival_time.minute) + "(On Time)"
+                    status = "Delivered at time: " + str(package.arrival_time.hour) + ":" + str(package.arrival_time.minute) + " (On Time)"
             print("   ID: " + str(package.id) + "  Status: " + status)
 
         
@@ -367,15 +356,15 @@ def loadWrongAddressPackages(trucks,extras):
         id = extras.pop()
         truck1.loadPackageById(id)
         #truck stores when it will be receiving the address for use in delivery function
-        truck1.address_update_time = datetime.datetime(2024,11,10,11,20)
+        truck1.address_update_time = datetime.datetime(2024,11,10,10,20)
     while truck2.package_count < 16 and len(extras) > 0:
         id = extras.pop()
         truck2.loadPackageById(id)
-        truck2.address_update_time = datetime.datetime(2024,11,10,11,20)
+        truck2.address_update_time = datetime.datetime(2024,11,10,10,20)
     while truck3.package_count < 16 and len(extras) > 0:
         id = extras.pop()
         truck3.loadPackageById(id)
-        truck3.address_update_time = datetime.datetime(2024,11,10,11,20)
+        truck3.address_update_time = datetime.datetime(2024,11,10,10,20)
 
 
 def printAllTrucksStatus(trucks,time):
@@ -389,4 +378,42 @@ def printAllTrucksStatus(trucks,time):
     for truck in trucks:
         truck.printDeliveryStatus(time)
         print()
+
+
+#converts time from csv to datetime
+def csvToDateTime(time):
+    if time == "EOD":
+        return datetime.datetime(2024,11,10,23,59)
+    else:
+        time_arr = time[:-3].split(":")
+        return datetime.datetime(2024,11,10,int(time_arr[0]),int(time_arr[1]))
+
+
+#reads package csv
+def loadPackageData(csv_path):
+    packages = []
+    with open(csv_path,mode='r') as file:
+        csvFile = csv.reader(file)
+        line_arr = []
+        for line in csvFile:
+            line_arr.append(line)
+        for i in range(1,len(line_arr)):
+            line = line_arr[i]
+            package = Package(line[0],line[1],csvToDateTime(line[5]),line[2],line[4],line[6],line[7])
+            packages.append(package)
+    return packages
+
     
+#reads distance_table csv
+def loadDistanceData(csv_path):
+    with open(csv_path,mode='r') as file:
+        csvFile = csv.reader(file)
+        line_arr = []
+        for line in csvFile:
+            line_arr.append(line)
+        destination_array = line_arr[0][1:]
+        matrix = []
+        for i in range(1,len(line_arr)):
+            line = line_arr[i]
+            matrix.append(line[1:])
+        return (destination_array,matrix)

@@ -82,3 +82,10 @@ def merge_sort(items,i,k,key_f):
         merge_sort(items,j + 1,k,key_f)
 
         merge(items,i,j,k,key_f)
+
+
+#converts strings to floats
+def floatify(matrix):
+    for i in range(len(matrix)):
+        for j in range(len(matrix)):
+            matrix[i][j] = float(matrix[i][j])
