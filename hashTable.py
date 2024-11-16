@@ -1,4 +1,4 @@
-from postal import Package
+from package import Package
 
 
 class HashTable:

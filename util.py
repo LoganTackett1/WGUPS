@@ -10,6 +10,7 @@ def FloydWarshallAllPairsShortestPath(matrix):
                     matrix[fromIndex][toIndex] = possibleLength
     return matrix
 
+
 # key_f is a function that maps start and items from list to their vertex number.
 # ex: start and list are package ids, key_f can map package id's to their destinations vertex number.
 # start is assumed to be the index of the location in the adjacency matrix and not an item id.
@@ -29,6 +30,7 @@ def nearestNeighbor(start,list,key_f,matrix):
         list.remove(min_item)
     return sorted
 
+
 #used to take the distance table and turn it into a symmetrical matrix.
 #used in preparing distance table for all-pairs shortest path calculation
 def populateUpperTriange(matrix):
@@ -36,6 +38,7 @@ def populateUpperTriange(matrix):
         for j in range(1,len(matrix)):
             matrix[i][j] = matrix[j][i]
     return matrix
+
 
 #merge sort will use key_f to map package id's to their deadline
 def merge(items,i,j,k,key_f):
@@ -72,6 +75,7 @@ def merge(items,i,j,k,key_f):
         items[i + merge_pos] = merged_items[merge_pos]
         merge_pos += 1
 
+
 #merge sort, O(nlogn) will be used to sort packages in trucks by deadline.
 def merge_sort(items,i,k,key_f):
     j = 0
@@ -89,3 +93,11 @@ def floatify(matrix):
     for i in range(len(matrix)):
         for j in range(len(matrix)):
             matrix[i][j] = float(matrix[i][j])
+
+
+#converts single digit number into two digit with leading 0
+def twoDigit(num):
+    if num > 9:
+        return str(num)
+    else:
+        return "0" + str(num)
