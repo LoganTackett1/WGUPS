@@ -1,4 +1,5 @@
 from util import twoDigit
+import datetime
 
 class Package:
     def __init__(self,id,address,deadline,city,zip,weight,note=None):
@@ -37,4 +38,7 @@ class Package:
             if self.address_correction_time != None:
                 if time < self.address_correction_time:
                     address = "300 State St (Incorrect Address Listed)"
-            print("ID: " + str(self.id) + " Address: " + str(address) + "  Status: " + status)
+            deadline = "EOD"
+            if self.deadline < datetime.datetime(2024,11,10,23,58):
+                deadline = str(self.deadline.hour) + ":" + twoDigit(self.deadline.minute)
+            print("ID: " + str(self.id) + " Address: " + str(address) + " Deadline: "  + deadline + "  Status: " + status)
