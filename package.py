@@ -10,10 +10,14 @@ class Package:
         self.zip = int(zip)
         self.weight = float(weight)
         self.note = note
+        self.address_correction_time = None
 
         #extra package props
         self.arrival_time = None
         self.departure_time = None
+
+    def setAddressCorrectionTime (self,time):
+        self.address_correction_time = time
 
     def printStatus(self,time):
         #calculate status
@@ -29,4 +33,8 @@ class Package:
                     status = "Delivered at time: " + str(self.arrival_time.hour) + ":" + twoDigit(self.arrival_time.minute) + " (Late)"
                 else:
                     status = "Delivered at time: " + str(self.arrival_time.hour) + ":" + twoDigit(self.arrival_time.minute) + " (On Time)"
-            print("ID: " + str(self.id) + "  Status: " + status)
+            address = self.address
+            if self.address_correction_time != None:
+                if time < self.address_correction_time:
+                    address = "300 State St (Incorrect Address Listed)"
+            print("ID: " + str(self.id) + " Address: " + str(address) + "  Status: " + status)

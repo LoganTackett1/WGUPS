@@ -1,4 +1,5 @@
 from util import merge_sort, nearestNeighbor, twoDigit
+from package import Package
 import datetime
 import math
 
@@ -237,18 +238,21 @@ class Truck:
             status = "Delivering"
         else:
             status = "At HUB"
-        print("Truck " + str(self.id) + " status: " + status)
+        print("Truck " + str(int(self.id) + 1) + " status: " + status)
 
         #print truck milage
         print("   Current Milage: " + str(self.calculateMilage(time)))
         print()
         
         #print package information
-        print("   Truck " + str(self.id) +  " Packages:")
+        print("   Truck " + str(int(self.id) + 1) +  " Packages:")
         all_packages = self.packages + self.packages_no_address + self.delivered
         for id in all_packages:
             package = self.hashTable.lookup(id)
+            print("   ",end="")
+            package.printStatus(time)
             #calculate status
+            """
             if time < package.departure_time:
                 status = "HUB"
             elif time >= package.departure_time and time < package.arrival_time:
@@ -262,3 +266,4 @@ class Truck:
                 else:
                     status = "Delivered at time: " + str(package.arrival_time.hour) + ":" + twoDigit(package.arrival_time.minute) + " (On Time)"
             print("   ID: " + str(package.id) + "  Status: " + status)
+            """

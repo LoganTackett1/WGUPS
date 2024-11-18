@@ -30,6 +30,10 @@ hash_table = HashTable(10)
 for package in csv_packages:
     hash_table.insertPackage(package)
 
+#mark package 9's address as incorrectly listed by assigning correction time:
+package_9 = hash_table.lookup(9)
+package_9.setAddressCorrectionTime(datetime.datetime(2024,11,10,10,20))
+
 #create trucks 1, 2, and 3. Truck 1 leaves at 8:00, Truck 2 leaves at 9:05, and truck 3 leaves when one of the two trucks returns. 
 truck1 = Truck(0,datetime.datetime(2024,11,10,8,0),destination_array,matrix,hash_table)
 truck2 = Truck(1,datetime.datetime(2024,11,10,9,5),destination_array,matrix,hash_table)
